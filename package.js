@@ -1,6 +1,8 @@
 Package.describe({
-  name: 'classy-job',
-  version: '0.1.0'
+  name: 'peerlibrary:classy-job',
+  summary: "Class-based wrapper around job collection",
+  version: '0.1.0',
+  git: 'https://github.com/peerlibrary/meteor-classy-job.git'
 });
 
 Package.onUse(function (api) {
