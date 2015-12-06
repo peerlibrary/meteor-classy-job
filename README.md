@@ -31,6 +31,9 @@ class ExampleJob extends Job {
 ExampleJob.register();
 ```
 
+`run` is expected to be blocking and when it returns the job is seen as successfully completed. The return value
+is stored in the job's result. If `run` throws an exception, the job is marked as failed and exception is logged.
+
 Then, when you want to put a new instance of the job into the queue, run:
 
 ```javascript
