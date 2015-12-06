@@ -49,7 +49,7 @@ class Job
 
     job.save options?.save
 
-  # You should use .refresh() if you want the recent document from the database.
+  # You should use query yourself the database if you want the recent document from the database.
   getQueueJob: ->
     JobsWorker._makeJob
       _id: @_id
