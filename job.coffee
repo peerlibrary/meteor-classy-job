@@ -29,12 +29,16 @@ class Job
   enqueueOptions: (options) ->
     options or {}
 
+  # Method so that job class can set or override skipping logic.
+  shouldSkip: (options) ->
+    # There is a race-condition here, but in the worst case there will be
+    # some duplicate work done. Jobs ought to be idempotent anyway.
+    return options?.skipIfExisting and @constructor.exists @data, options?.skipIncludingCompleted
+
   enqueue: (options) ->
     throw new @constructor.FatalJobError "Unknown job class '#{@type()}'." unless Job.types[@type()]
 
-    # There is a race-condition here, but in the worst case there will be
-    # some duplicate work done. Jobs ought to be idempotent anyway.
-    return if options?.skipIfExisting and @constructor.exists @data, options?.skipIncludingCompleted
+    return if @shouldSkip options
 
     job = JobsWorker._createJob @type(), @data
 
