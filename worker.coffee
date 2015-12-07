@@ -142,3 +142,6 @@ class JobsWorker extends JobsWorker
               Log.error "Error running a job queue: #{error.stack or error}"
       finally
         @_jobQueueRunning = false
+
+  @promote: ->
+    @collection._promote_jobs()
