@@ -7,7 +7,7 @@ a powerful and easy to use job manager for Meteor.
 Adding this package to your [Meteor](http://www.meteor.com/) application adds `Job` and `JobsWorker` classes
 into the global scope.
 
-Server side only.
+Server side only (with `JobsWorker` available on the client side as well).
 
 Installation
 ------------
