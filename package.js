@@ -17,11 +17,18 @@ Package.onUse(function (api) {
     'ejson'
   ]);
 
+  api.use([
+    'promise'
+  ], 'server');
+
   // 3rd party dependencies.
   api.use([
-    'vsivsi:job-collection@1.4.0',
-    'peerlibrary:stacktrace@0.2.0'
+    'vsivsi:job-collection@1.4.0'
   ]);
+
+  api.use([
+    'peerlibrary:stacktrace@1.3.1_1'
+  ], 'server');
 
   api.export('Job', 'server');
   api.export('JobsWorker');

@@ -131,7 +131,8 @@ class JobsWorker extends JobsWorker
                 result = jobInstance.run()
               catch error
                 if error instanceof Error
-                  stack = StackTrace.printStackTrace e: error
+                  stackframes = Promise.await StackTrace.fromError error
+                  stack = (stackframe.toString() for stackframe in stackframes)
                   job.fail EJSON.toJSONValue(value: error.message, stack: stack),
                     fatal: error instanceof Job.FatalJobError
                 else
