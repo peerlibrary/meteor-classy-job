@@ -53,7 +53,7 @@ class Job
 
     job.save options?.save
 
-  # You should use query yourself the database if you want the recent document from the database.
+  # You should query yourself the database if you want the recent document from the database.
   getQueueJob: ->
     JobsWorker._makeJob
       _id: @_id
