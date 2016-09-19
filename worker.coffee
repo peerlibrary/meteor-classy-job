@@ -124,10 +124,7 @@ class JobsWorker extends JobsWorker
           for job in jobs
             try
               try
-                jobClass = Job.types[job.type]
-                jobInstance = new jobClass job.data
-                jobInstance._id = job._doc._id
-                jobInstance.runId = job._doc.runId
+                jobInstance = Job.fromQueueJob job
                 result = jobInstance.run()
               catch error
                 if error instanceof Error

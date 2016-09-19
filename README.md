@@ -91,3 +91,37 @@ Meteor.startup(function () {
 Starting is randomly delayed a bit to distribute the behavior of workers equally inside configured intervals.
 
 Jobs are executed serially inside a given worker, one by one.
+
+Working with jobs
+-----------------
+
+Job classes will be instantiated automatically every time they are ready and their `run`
+method will be called.
+Inside your `run` method you can call other methods, for example `log` or `progress` to report
+on job's progress.
+
+You can use `Job.find(query, fields)` and `Job.findOne(query, fields)` to get instances of jobs from the database.
+Resulting objects will be proper instances of your job classes of the correct type for each result object.
+If you want only types of a particular class you can limit the query yourself:
+
+```javascript
+Job.find({
+  type: ExampleJob.type()
+});
+```
+
+If you need access to any other functionality of job collection not available directly through
+existing methods, you can call `getQueueJob` to get underlying job collection's job.
+We call job collection's jobs *queue jobs*.
+
+So, for example, to [cancel](https://github.com/vsivsi/meteor-job-collection#jobcanceloptions-callback---anywhere) a
+job, you can do:
+
+```javascript
+Job.findOne({
+  'data.argument': 'foobar'
+}).getQueueJob().cancel();
+```
+
+You can use `JobsWorker.collection` to access underlying [job collection](https://github.com/vsivsi/meteor-job-collection).
+To convert its jobs (queue jobs) to an instance of a class-based job you can use `Job.fromQueueJob(job)`.

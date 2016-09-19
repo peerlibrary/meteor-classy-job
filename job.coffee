@@ -109,11 +109,14 @@ class Job
 
   @FatalJobError: FatalJobError
 
-  @exists: (data, includingCompleted) ->
-    # Cancellable job statuses are in fact the same as those we want for existence check.
-    statuses = JobsWorker.collection.jobStatusCancellable
-    statuses = statuses.concat ['completed'] if includingCompleted
+  @fromQueueJob: (queueJob) ->
+    jobClass = @types[queueJob.type]
+    jobInstance = new jobClass queueJob.data
+    jobInstance._id = queueJob._doc._id
+    jobInstance.runId = queueJob._doc.runId
+    jobInstance
 
+  @_constructQuery: (data) ->
     values = (path, doc) ->
       res = {}
       for field, value of doc
@@ -126,6 +129,65 @@ class Job
 
     query = values '', data
     query.type = @type()
+
+  # Raw query, without assuring that the resulting document is of the same type.
+  # TODO: Implement that if it is called on a subclass that it limits the query only to that type.
+  @find: (query={}, options={}) ->
+    # We require calling on Job for now.
+    throw new Error "Not supported." if @ isnt Job
+
+    options = _.defaults options,
+      fields:
+        _private: 0
+        log: 0
+        failures: 0
+
+    JobsWorker.collection.find query, _.extend {}, options,
+      transform: (document) =>
+        @fromQueueJob JobsWorker._makeJob document
+
+  # Raw query, without assuring that the resulting document is of the same type.
+  # TODO: Implement that if it is called on a subclass that it limits the query only to that type.
+  @findOne: (query={}, options={}) ->
+    # We require calling on Job for now.
+    throw new Error "Not supported." if @ isnt Job
+
+    options = _.defaults options,
+      fields:
+        _private: 0
+        log: 0
+        failures: 0
+
+    JobsWorker.collection.findOne query, _.extend {}, options,
+      transform: (document) =>
+        @fromQueueJob JobsWorker._makeJob document
+
+  # This query limits the results only to documents of the same type. So "Job.findData" will not return
+  # anything, but "ExampleJob.findData" (where ExampleJob is a subclass of Job) might.
+  # TODO: Implement that if it is called on Job it does not limit the type.
+  @findData: (data, options) ->
+    # We require calling on subclass for now.
+    throw new Error "Not supported." if @ is Job
+
+    query = @_constructQuery()
+    @find query, options
+
+  # This query limits the results only to documents of the same type. So "Job.findDataOne" will not return
+  # anything, but "ExampleJob.findDataOne" (where ExampleJob is a subclass of Job) might.
+  # TODO: Implement that if it is called on Job it does not limit the type.
+  @findDataOne: (data, options) ->
+    # We require calling on subclass for now.
+    throw new Error "Not supported." if @ is Job
+
+    query = @_constructQuery()
+    @findOne query, options
+
+  @exists: (data, includingCompleted) ->
+    # Cancellable job statuses are in fact the same as those we want for existence check.
+    statuses = JobsWorker.collection.jobStatusCancellable
+    statuses = statuses.concat ['completed'] if includingCompleted
+
+    query = @_constructQuery()
     query.status =
       $in: statuses
 
