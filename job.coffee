@@ -130,6 +130,8 @@ class Job
     query = values '', data
     query.type = @type()
 
+    query
+
   # Raw query, without assuring that the resulting document is of the same type.
   # TODO: Implement that if it is called on a subclass that it limits the query only to that type.
   @find: (query={}, options={}) ->
@@ -169,7 +171,7 @@ class Job
     # We require calling on subclass for now.
     throw new Error "Not supported." if @ is Job
 
-    query = @_constructQuery()
+    query = @_constructQuery data
     @find query, options
 
   # This query limits the results only to documents of the same type. So "Job.findDataOne" will not return
@@ -179,7 +181,7 @@ class Job
     # We require calling on subclass for now.
     throw new Error "Not supported." if @ is Job
 
-    query = @_constructQuery()
+    query = @_constructQuery data
     @findOne query, options
 
   @exists: (data, includingCompleted) ->
@@ -187,7 +189,7 @@ class Job
     statuses = JobsWorker.collection.jobStatusCancellable
     statuses = statuses.concat ['completed'] if includingCompleted
 
-    query = @_constructQuery()
+    query = @_constructQuery data
     query.status =
       $in: statuses
 
