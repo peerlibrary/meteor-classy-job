@@ -27,7 +27,7 @@ Package.onUse(function (api) {
   ]);
 
   api.use([
-    'peerlibrary:stacktrace@1.3.1_1'
+    'peerlibrary:stacktrace@1.3.1_2'
   ], 'server');
 
   api.export('Job', 'server');
