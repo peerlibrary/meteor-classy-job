@@ -127,7 +127,7 @@ class Job
           res[newPath] = value
       res
 
-    query = values '', data
+    query = values 'data', data
     query.type = @type()
 
     query
